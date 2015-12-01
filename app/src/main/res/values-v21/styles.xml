@@ -7,5 +7,6 @@
         <item name="android:colorPrimaryDark">@color/primarycolorDark</item>
         <item name="android:colorAccent">@color/primarycolorAccent</item>
         <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:colorControlHighlight">@color/colorHighLight</item>
     </style>
 </resources>

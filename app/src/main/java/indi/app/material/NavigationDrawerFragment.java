@@ -2,6 +2,7 @@ package indi.app.material;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,9 +13,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,14 +32,14 @@ import java.util.List;
  * Use the {@link NavigationDrawerFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NavigationDrawerFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private RecyclerView recyclerView;
+public class NavigationDrawerFragment extends Fragment implements DataAdapter.AdClickListner{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String PREF_FILE_NAME = "MyPrefName" ;
     private static final String PREF_USER_LEARNED_DRAWER = "MyDrawer" ;
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private RecyclerView recyclerView;
     private ActionBarDrawerToggle mdrawerToggle;
     private DataAdapter dataAdapter;
     private DrawerLayout mDrawerLayout;
@@ -71,6 +75,43 @@ public class NavigationDrawerFragment extends Fragment {
         // Required empty public constructor
     }
 
+    public static List<DataHolder> getRecyclerData()
+    {
+        List<DataHolder> Information = new ArrayList<>();
+        int[] icon ={R.mipmap.ic_image1,R.mipmap.ic_action2};
+        String[] title ={"Gja","Hegd"};
+        Log.d("gaj","Length"+title.length);
+        for(int i=0;i<title.length;i++)
+        {
+            DataHolder current = new DataHolder();
+            current.iconID=icon[i];
+            current.title=title[i];
+            Information.add(current);
+        }
+        return Information;
+    }
+
+    public static void saveToPreferences(Context context, String preferenceName, String preferenceValue)
+    {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_FILE_NAME,Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(preferenceName,preferenceValue);
+        editor.apply();
+    }
+
+    public static String readPreferences(Context context, String preferenceName, String defaultValue)
+    {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
+        return sharedPreferences.getString(preferenceName, defaultValue);
+    }
+
+    // TODO: Rename method, update argument and hook method into UI event
+    /*public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }*/
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,31 +135,22 @@ public class NavigationDrawerFragment extends Fragment {
         recyclerView =(RecyclerView)layout.findViewById(R.id.drawerlist);
         //New adapter which holds data for reCyclerView
         dataAdapter = new DataAdapter(getActivity(),getRecyclerData());
+        dataAdapter.setClickListner(this);
         recyclerView.setAdapter(dataAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.addOnItemTouchListener(new RecyclertouchListner(getActivity(), recyclerView, new ClickListner() {
+            @Override
+            public void onClick(View v, int position) {
+                Toast.makeText(getActivity(),"onClick"+position,Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onLongClick(View v, int position) {
+                Toast.makeText(getActivity(),"onLongClick"+position,Toast.LENGTH_SHORT).show();
+            }
+        }));
         return layout;
     }
-    public static List<DataHolder> getRecyclerData()
-    {
-        List<DataHolder> Information = new ArrayList<>();
-        int[] icon ={R.mipmap.ic_image1,R.mipmap.ic_action2};
-        String[] title ={"Gja","Hegd"};
-        for(int i=0;i<title.length;i++)
-        {
-            DataHolder current = new DataHolder();
-            current.iconID=icon[i];
-            current.title=title[i];
-            Information.add(current);
-        }
-        return Information;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    /*public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }*/
 
     @Override
     public void onAttach(Activity activity) {
@@ -178,7 +210,21 @@ public class NavigationDrawerFragment extends Fragment {
         }) ;
     }
 
+/**
+ *Method implementation of interface inside adapter class
+ * Called from ClickListner Onclick() in an adpter
+ * **/
+    @Override
+    public void itemClicked(View view, int position) {
+        startActivity(new Intent(getActivity(),SubActivity.class));
 
+    }
+
+
+    public  static  interface ClickListner{
+        public void onClick(View v, int position);
+        public void onLongClick(View v, int position);
+    }
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -193,17 +239,57 @@ public class NavigationDrawerFragment extends Fragment {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
-    public static void saveToPreferences(Context context, String preferenceName, String preferenceValue)
+
+    class RecyclertouchListner implements  RecyclerView.OnItemTouchListener
     {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_FILE_NAME,Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(preferenceName,preferenceValue);
-        editor.apply();
-    }
-    public static String readPreferences(Context context, String preferenceName, String defaultValue)
-    {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
-        return sharedPreferences.getString(preferenceName, defaultValue);
+       private GestureDetector gestureDetector;
+        private ClickListner clickListner;
+        public RecyclertouchListner (Context context, final RecyclerView recyclerView, final ClickListner clickListner)
+        {
+            this.clickListner =clickListner;
+            gestureDetector = new GestureDetector(context,new GestureDetector.SimpleOnGestureListener(){
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    Log.d("GAJA","onSingleTapUp"+e);
+                    //return super.onSingleTapUp(e);
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+
+
+                    View child =recyclerView.findChildViewUnder(e.getX(), e.getY());
+                    if(null != child && clickListner != null)
+                    {
+                        clickListner.onLongClick(child,recyclerView.getChildAdapterPosition(child));
+                    }
+                    Log.d("GAJA", "onLongPress" + e);
+                }
+            });
+        }
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+            View child =rv.findChildViewUnder(e.getX(), e.getY());
+            if (null !=child && clickListner != null && gestureDetector.onTouchEvent(e))
+            {
+                clickListner.onClick(child,rv.getChildAdapterPosition(child));
+            }
+            //Manually we neeed to forward this call .gestureDetector
+            //will analyze
+
+            return false;
+        }
+
+        @Override
+        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+        }
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+        }
     }
 
 }
