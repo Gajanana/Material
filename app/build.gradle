@@ -24,4 +24,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.android.support:recyclerview-v7:+'
     compile 'org.lucasr.dspec:dspec:0.1.1'
+    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
+    compile 'com.github.jjhesk:MaterialTabsAdavanced:1.0.1-final'
+    compile 'com.mcxiaoke.volley:library:1.0.19'
+    compile 'com.telly:mrvector:0.2.0'
 }

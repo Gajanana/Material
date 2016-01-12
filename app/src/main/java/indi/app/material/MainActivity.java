@@ -1,6 +1,8 @@
 package indi.app.material;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,6 +11,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,31 +26,55 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import indi.app.tab.SlidingTabLayout;
 
 
-public class MainActivity extends ActionBarActivity {
-   private Toolbar toolbar;
+public class MainActivity extends AppCompatActivity {
+    private Toolbar toolbar;
     private ViewPager mPager;
     private SlidingTabLayout mslidingTabLayout;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar =(Toolbar)findViewById(R.id.app_bar);
+
+        toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         NavigationDrawerFragment drawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawerr);
         drawerFragment.setUp(R.id.fragment_navigation_drawerr, (DrawerLayout) findViewById(R.id.drawer_layout), toolbar);
 
-        mPager = (ViewPager)findViewById(R.id.pager);
+        mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(new MyPageAdapter(getSupportFragmentManager()));
-        mslidingTabLayout=(SlidingTabLayout)findViewById(R.id.tab);
+        mslidingTabLayout = (SlidingTabLayout) findViewById(R.id.tab);
+        mslidingTabLayout.setDistributeEvenly(true);
+        //setting color for tabs
+//        mslidingTabLayout.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
+//            @Override
+//            public int getIndicatorColor(int position) {
+//                return getResources().getColor(R.color.primarycolorAccent);
+//            }
+//        });
+        mslidingTabLayout.setBackgroundColor(getResources().getColor(R.color.primarycolor));
+        mslidingTabLayout.setSelectedIndicatorColors(getResources().getColor(R.color.primarycolorAccent));
+                mslidingTabLayout.setCustomTabView(R.layout.custom_tab_view, R.id.customtextView);
         mslidingTabLayout.setViewPager(mPager);
 
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     @Override
@@ -63,44 +93,68 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Toast.makeText(this,"Oh My APP"+item.getTitle(),Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Oh My APP" + item.getTitle(), Toast.LENGTH_SHORT).show();
             return true;
         }
-        if (id == R.id.navigate)
-        {
-            startActivity(new Intent(this,SubActivity.class));
+        if (id == R.id.navigate) {
+            startActivity(new Intent(this, SubActivity.class));
         }
+        if (id == R.id.action_stablib){
+            startActivity(new Intent(this, TabLibActivity.class));
+        }
+        if (id == R.id.action_vector){
+            startActivity(new Intent(this, VectorTestActivity.class));
+        }
+
 
         return super.onOptionsItemSelected(item);
     }
 
-    public static class MyFragment extends Fragment{
-        private TextView textView;
-        public static MyFragment getInstanceOf(int position)
-        {
-            MyFragment myFragment = new MyFragment();
-            Bundle arg = new Bundle();
-            arg.putInt("position",position);
-            myFragment.setArguments(arg);
-            return myFragment;
-        }
-        @Override
-        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                                 @Nullable Bundle savedInstanceState) {
-            View layout =inflater.inflate(R.layout.fragment_my,container,false);
-            textView =(TextView)layout.findViewById(R.id.position);
-            Log.d("Gaja","Crashed");
-            Bundle bundle= getArguments();
-            if (null != bundle){
-                textView.setText("page selected is "+bundle.getInt("position"));
-            }
-            return layout;
-        }
+    @Override
+    public void onStart() {
+        super.onStart();
 
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://indi.app.material/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
     }
 
-    class MyPageAdapter extends FragmentPagerAdapter{
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://indi.app.material/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
+    }
+
+
+
+    class MyPageAdapter extends FragmentPagerAdapter {
         String[] tabs;
+        int icons[] = {R.mipmap.ic_action_dsc_0645, R.mipmap.ic_action_notification_drive_eta, R.mipmap.ic_action_social_domain};
 
         public MyPageAdapter(FragmentManager fm) {
             super(fm);
@@ -113,10 +167,16 @@ public class MainActivity extends ActionBarActivity {
 
             return myFragment;
         }
+
         @Override
-        public CharSequence getPageTitle(int position)
-        {
-            return tabs[position];
+        public CharSequence getPageTitle(int position) {
+            Drawable drawable = getResources().getDrawable(icons[position]);
+            drawable.setBounds(0, 0, 36, 36);
+            ImageSpan imageSpan = new ImageSpan(drawable);
+            SpannableString spannableString = new SpannableString("GAJA");
+            spannableString.setSpan(imageSpan, 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            return spannableString;
+//            return tabs[position];
         }
 
         @Override
