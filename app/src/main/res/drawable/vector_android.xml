@@ -4,20 +4,33 @@
     tools:targetApi="21"
     auto:height="64dp"
     auto:width="64dp"
-    auto:viewportHeight="600"
     auto:viewportWidth="600"
+    auto:viewportHeight="600"
+
     android:height="64dp"
     android:width="64dp"
+    android:viewportWidth="600"
     android:viewportHeight="600"
-    android:viewportWidth="600">
+    >
     <group
+        auto:name="rotationGroup"
+        auto:pivotX="300.0"
+        auto:pivotY="300.0"
+        auto:rotation="45.0"
+
         android:name="rotationGroup"
         android:pivotX="300.0"
         android:pivotY="300.0"
-        android:rotation="45.0" >
+        android:rotation="45.0"
+        >
         <path
+            auto:name="v"
+            auto:fillColor="#000000"
+            auto:pathData="M300,70 l 0,-70 70,70 0,0 -70,70z"
+
             android:name="v"
             android:fillColor="#000000"
-            android:pathData="M300,70 l 0,-70 70,70 0,0 -70,70z" />
+            android:pathData="M300,70 l 0,-70 70,70 0,0 -70,70z"
+            />
     </group>
 </vector>

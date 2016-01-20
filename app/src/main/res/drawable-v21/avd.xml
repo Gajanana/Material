@@ -7,5 +7,5 @@
         android:animation="@anim/rotation" />
     <target
         android:name="v"
-        android:animation="@anim/rotation" />
+        android:animation="@anim/path_morph" />
 </animated-vector>
