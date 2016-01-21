@@ -24,7 +24,16 @@ public class VectorTestActivity extends AppCompatActivity {
             toolbar = (Toolbar) findViewById(R.id.app_bar);
         }
         imageView =(ImageView)findViewById(R.id.VectorImage);
-        Drawable drawable = MrVector.inflate(getResources(),R.drawable.vector_android);
+        Drawable drawable = null;
+        if(Util.isLollipoporGreater())
+        {
+            drawable = MrVector.inflate(getResources(),R.drawable.animated_vector_clock);
+        }
+        else
+        {
+            drawable = MrVector.inflate(getResources(),R.drawable.vector_clock);
+        }
+
         if(Util.isJellyBeanorGreater())
         {
             imageView.setBackground(drawable);
